@@ -57,7 +57,7 @@ pub trait ProsimitySearchable {
     }
 }
 
-/// right way to look at maximal listing problems i several cases
+/// right way to look at maximal listing problems in several cases
 pub trait CanonicalReconstruction {
     /// a set of elements, e.g., V(G)
     type Universe;
