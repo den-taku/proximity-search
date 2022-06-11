@@ -7,7 +7,7 @@
 ///
 /// Output
 /// - all solutions S
-trait ProsimitySearchable {
+pub trait ProsimitySearchable {
     /// a set of elements, e.g., V(G)
     type Universe;
     /// (not necessarily maximal) solutions that meets property at hand.
@@ -55,6 +55,29 @@ trait ProsimitySearchable {
             println!("{solution}");
         }
     }
+}
+
+/// right way to look at maximal listing problems i several cases
+pub trait CanonicalReconstruction {
+    /// a set of elements, e.g., V(G)
+    type Universe;
+    /// (not necessarily maximal) solutions that meets property at hand.
+    type Components;
+    /// maximul solutions that is a subset of the universe and meets property at hand.
+    type Solutions;
+    /// not actually used in algorithm, but needed to prove the correctness.
+    ///
+    /// ordering s1, ..., s|S| of S's elemtns that any prefix of this corresponds to Self::Components
+    fn canonical_order(&self, _solution: &Self::Solutions) -> Vec<usize> {
+        vec![]
+    }
+    /// Given a maximal solution S and any vertex v \notin S, there is set χ ⊆ 2^Component of removable sets. s.t.
+    /// 1. χ = {X1, X2,...} can be computed in polynomial time.
+    /// 2. S ∪ {v} \ Xi is in Component for any Xi in χ
+    /// 3. For any S* such that v is the canonical extender of S, S*, Xi ∩ (proximity(S, S*)) = ∅ for some Xi in χ
+    ///
+    /// then, calculate NEIGHBORS(S, v) = ∪_Xi COMP(S ∪ {v} \ Xi)
+    fn neightbors(&self, solution: &Self::Solutions, vertex: usize) -> Vec<Self::Solutions>;
 }
 
 fn main() {
