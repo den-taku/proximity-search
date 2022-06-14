@@ -80,6 +80,33 @@ pub trait CanonicalReconstruction {
     fn neightbors(&self, solution: &Self::Solutions, vertex: usize) -> Vec<Self::Solutions>;
 }
 
+mod maximal_connected_induced_bipartile_subgraph;
+mod maximal_induced_bipartite_subgraph;
+
+use maximal_induced_bipartite_subgraph::MaximalInducedBipartiteSubgraph;
+use std::collections::HashSet;
+
 fn main() {
-    println!("Hello, world!");
+    let vertices = 8;
+    let edges = vec![
+        (0, 1),
+        (0, 2),
+        (0, 3),
+        (0, 4),
+        (1, 2),
+        (1, 3),
+        (1, 4),
+        (2, 3),
+        (2, 5),
+        (3, 4),
+        (4, 6),
+        (5, 6),
+        (5, 7),
+        (6, 7),
+    ]
+    .into_iter()
+    .collect::<HashSet<_>>();
+
+    let mut problem = MaximalInducedBipartiteSubgraph::init(vertices, edges);
+    problem.run();
 }
