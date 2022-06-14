@@ -87,7 +87,8 @@ use maximal_connected_induced_bipartile_subgraph::MaximalConnectedInducedBiparti
 use std::collections::HashSet;
 
 fn main() {
-    let vertices = 8;
+    // let vertices = 8;
+    let vertices = 5;
     let edges = vec![
         (0, 1),
         (0, 2),
@@ -97,12 +98,12 @@ fn main() {
         (1, 3),
         (1, 4),
         (2, 3),
-        (2, 5),
+        // (2, 5),
         (3, 4),
-        (4, 6),
-        (5, 6),
-        (5, 7),
-        (6, 7),
+        // (4, 6),
+        // (5, 6),
+        // (5, 7),
+        // (6, 7),
     ]
     .into_iter()
     .collect::<HashSet<_>>();

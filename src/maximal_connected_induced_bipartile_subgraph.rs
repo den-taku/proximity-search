@@ -55,7 +55,7 @@ impl MaximalConnectedInducedBipartiteSubgraph {
                 continue;
             }
             let n_v = (0..self.graph.vertices)
-                .map(|i| self.graph.edges.contains(&(i, v)) || self.graph.edges.contains(&(i, v)))
+                .map(|i| self.graph.edges.contains(&(i, v)) || self.graph.edges.contains(&(v, i)))
                 .enumerate()
                 .filter(|e| e.1)
                 .map(|e| e.0)
