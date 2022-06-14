@@ -8,7 +8,7 @@ struct Graph {
 
 pub struct MaximalConnectedInducedBipartiteSubgraph {
     graph: Graph,
-    solutions: HashSet<Vec<usize>>,
+    pub solutions: HashSet<Vec<usize>>,
 }
 
 impl MaximalConnectedInducedBipartiteSubgraph {
@@ -47,39 +47,7 @@ impl MaximalConnectedInducedBipartiteSubgraph {
     }
 
     fn neighbors(&self, solution: HashSet<usize>) -> Vec<HashSet<usize>> {
-        let solution_vec = set_to_vec(&solution);
-        let mut visited = solution_vec.iter().map(|_| false).collect::<Vec<_>>();
-
-        let mut b_0 = HashSet::new();
-        let mut b_1 = HashSet::new();
-
-        while let Some(i) = visited.iter().position(|e| !e) {
-            let mut start = solution_vec[i];
-            visited[i] = true;
-            b_0.insert(solution_vec[i]);
-            let mut is_b1 = true;
-            loop {
-                for (i, &v) in solution_vec.iter().enumerate() {
-                    if !visited[i]
-                        && (self.graph.edges.contains(&(start, v))
-                            || self.graph.edges.contains(&(v, start)))
-                    {
-                        visited[i] = true;
-                        if is_b1 {
-                            b_1.insert(v);
-                        } else {
-                            b_0.insert(v);
-                        }
-                        start = v;
-                        is_b1 ^= true;
-                        continue;
-                    }
-                }
-                break;
-            }
-        }
-        // println!("b_0: {:?}", set_to_vec(&b_0));
-        // println!("b_1: {:?}", set_to_vec(&b_1));
+        let (b_0, b_1) = self.bipartition(&solution);
 
         let mut neighbors = Vec::new();
         for v in 0..self.graph.vertices {
@@ -118,28 +86,72 @@ impl MaximalConnectedInducedBipartiteSubgraph {
         neighbors
     }
 
+    fn bipartition(&self, solution: &HashSet<usize>) -> (HashSet<usize>, HashSet<usize>) {
+        let solution_vec = set_to_vec(&solution);
+        let mut visited = solution_vec.iter().map(|_| None).collect::<Vec<_>>();
+
+        let mut b_0 = HashSet::new();
+        let mut b_1 = HashSet::new();
+
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back((0, solution_vec[0]));
+        b_0.insert(solution_vec[0]);
+        visited[0] = Some(0);
+
+        while let Some((i, v)) = queue.pop_front() {
+            let now = visited[i].unwrap();
+            let next = 1 - now;
+            for (j, &u) in solution_vec.iter().enumerate() {
+                if visited[j].is_none()
+                    && (self.graph.edges.contains(&(v, u)) || self.graph.edges.contains(&(u, v)))
+                {
+                    visited[j] = Some(next);
+                    if next == 0 {
+                        b_0.insert(u);
+                    } else {
+                        b_1.insert(u);
+                    }
+                    queue.push_back((j, u));
+                }
+            }
+        }
+        println!(
+            "b_0: {:?}",
+            set_to_vec(&b_0.iter().copied().map(|e| e + 1).collect::<HashSet<_>>())
+        );
+        println!(
+            "b_1: {:?}",
+            set_to_vec(&b_1.iter().copied().map(|e| e + 1).collect::<HashSet<_>>())
+        );
+        (b_0, b_1)
+    }
+
     fn cc(&self, set: &HashSet<usize>, v: usize) -> HashSet<usize> {
+        if set.is_empty() {
+            return HashSet::new();
+        }
         let mut new = HashSet::new();
         let set_vec = set_to_vec(&set);
         let mut visited = set_vec.iter().map(|_| false).collect::<Vec<_>>();
 
-        let mut start = v;
-        visited[set_vec.iter().position(|&e| e == v).unwrap()] = true;
+        let i = set_vec.iter().position(|&e| e == v).unwrap();
+        visited[i] = true;
         new.insert(v);
-        loop {
-            for (i, &v) in set_vec.iter().enumerate() {
-                if !visited[i]
-                    && (self.graph.edges.contains(&(start, v))
-                        || self.graph.edges.contains(&(v, start)))
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back(v);
+
+        while let Some(v) = queue.pop_front() {
+            for (j, &u) in set_vec.iter().enumerate() {
+                if !visited[j]
+                    && (self.graph.edges.contains(&(v, u)) || self.graph.edges.contains(&(u, v)))
                 {
-                    visited[i] = true;
-                    new.insert(v);
-                    start = v;
-                    continue;
+                    visited[j] = true;
+                    new.insert(u);
+                    queue.push_back(u);
                 }
             }
-            break;
         }
+
         new
     }
 
@@ -184,20 +196,19 @@ impl MaximalConnectedInducedBipartiteSubgraph {
         let set_vec = set_to_vec(&set);
         let mut visited = set_vec.iter().map(|_| false).collect::<Vec<_>>();
 
-        let mut start = set_vec[0];
         visited[0] = true;
-        loop {
-            for (i, &v) in set_vec.iter().enumerate() {
-                if !visited[i]
-                    && (self.graph.edges.contains(&(start, v))
-                        || self.graph.edges.contains(&(v, start)))
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back(set_vec[0]);
+
+        while let Some(v) = queue.pop_front() {
+            for (j, &u) in set_vec.iter().enumerate() {
+                if !visited[j]
+                    && (self.graph.edges.contains(&(v, u)) || self.graph.edges.contains(&(u, v)))
                 {
-                    visited[i] = true;
-                    start = v;
-                    continue;
+                    visited[j] = true;
+                    queue.push_back(u);
                 }
             }
-            break;
         }
         visited.iter().all(|&e| e)
     }

@@ -109,4 +109,10 @@ fn main() {
 
     let mut problem = MaximalConnectedInducedBipartiteSubgraph::init(vertices, edges);
     problem.run();
+
+    println!("\nSolutions: ");
+    for solution in problem.solutions {
+        let solution = solution.into_iter().map(|e| e + 1).collect::<Vec<_>>();
+        println!("  {solution:?}")
+    }
 }
