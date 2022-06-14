@@ -83,7 +83,7 @@ pub trait CanonicalReconstruction {
 mod maximal_connected_induced_bipartile_subgraph;
 mod maximal_induced_bipartite_subgraph;
 
-use maximal_induced_bipartite_subgraph::MaximalInducedBipartiteSubgraph;
+use maximal_connected_induced_bipartile_subgraph::MaximalConnectedInducedBipartiteSubgraph;
 use std::collections::HashSet;
 
 fn main() {
@@ -107,6 +107,6 @@ fn main() {
     .into_iter()
     .collect::<HashSet<_>>();
 
-    let mut problem = MaximalInducedBipartiteSubgraph::init(vertices, edges);
+    let mut problem = MaximalConnectedInducedBipartiteSubgraph::init(vertices, edges);
     problem.run();
 }
