@@ -118,7 +118,7 @@ fn main() {
         println!("  {index}: {solution:?}")
     }
     println!("\nEdges:");
-    for (u, v) in problem.edges {
-        println!("  {u} - {v}")
+    for (u, v) in problem.edges.iter().collect::<HashSet<_>>() {
+        println!("  {u} -> {v}")
     }
 }
