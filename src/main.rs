@@ -87,8 +87,8 @@ use maximal_connected_induced_bipartile_subgraph::MaximalConnectedInducedBiparti
 use std::collections::HashSet;
 
 fn main() {
-    // let vertices = 8;
-    let vertices = 5;
+    let vertices = 8;
+    // let vertices = 5;
     let edges = vec![
         (0, 1),
         (0, 2),
@@ -98,12 +98,12 @@ fn main() {
         (1, 3),
         (1, 4),
         (2, 3),
-        // (2, 5),
+        (2, 5),
         (3, 4),
-        // (4, 6),
-        // (5, 6),
-        // (5, 7),
-        // (6, 7),
+        (4, 6),
+        (5, 6),
+        (5, 7),
+        (6, 7),
     ]
     .into_iter()
     .collect::<HashSet<_>>();
@@ -111,9 +111,14 @@ fn main() {
     let mut problem = MaximalConnectedInducedBipartiteSubgraph::init(vertices, edges);
     problem.run();
 
-    println!("\nSolutions: ");
+    println!("\nSolutions:");
     for solution in problem.solutions {
+        let index = problem.index.get(&solution).unwrap();
         let solution = solution.into_iter().map(|e| e + 1).collect::<Vec<_>>();
-        println!("  {solution:?}")
+        println!("  {index}: {solution:?}")
+    }
+    println!("\nEdges:");
+    for (u, v) in problem.edges {
+        println!("  {u} - {v}")
     }
 }

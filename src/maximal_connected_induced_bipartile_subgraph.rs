@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 struct Graph {
     vertices: usize,
@@ -9,6 +9,8 @@ struct Graph {
 pub struct MaximalConnectedInducedBipartiteSubgraph {
     graph: Graph,
     pub solutions: HashSet<Vec<usize>>,
+    pub index: HashMap<Vec<usize>, usize>,
+    pub edges: Vec<(usize, usize)>,
 }
 
 impl MaximalConnectedInducedBipartiteSubgraph {
@@ -16,28 +18,41 @@ impl MaximalConnectedInducedBipartiteSubgraph {
         Self {
             graph: Graph { vertices, edges },
             solutions: HashSet::new(),
+            index: HashMap::new(),
+            edges: Vec::new(),
         }
     }
 
     pub fn run(&mut self) {
         let first_solution = self.comp(HashSet::new());
+        self.index
+            .insert(set_to_vec(&first_solution), self.solutions.len());
+        println!("maximal: {:?}", print_vec(&set_to_vec(&first_solution)));
         self.enume(first_solution, 1);
     }
 
     fn enume(&mut self, solution: HashSet<usize>, deps: usize) {
         let solution_vec = set_to_vec(&solution);
+        let u = *self.index.get(&solution_vec).unwrap();
         self.solutions.insert(solution_vec.clone());
         // For archieve polynomial delay, use `alternative output`
 
         // if deps % 2 == 0 {
-        println!("maximal: {:?}", print_vec(&solution_vec));
+        // println!("maximal: {:?}", print_vec(&solution_vec));
         // }
 
         for s in self.neighbors(solution) {
             let s_vec = set_to_vec(&s);
             if !self.solutions.contains(&s_vec) {
+                println!("maximal: {:?}", print_vec(&s_vec));
+                let v = self.solutions.len();
+                self.index.insert(s_vec, v);
+                self.edges.push((u, v));
                 self.enume(s, deps + 1);
             } else {
+                let v = *self.index.get(&s_vec).unwrap();
+                self.edges.push((u, v));
+                println!("duplicated: {:?}", print_vec(&s_vec));
             }
         }
 
