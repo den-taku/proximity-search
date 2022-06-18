@@ -82,6 +82,7 @@ pub trait CanonicalReconstruction {
 
 mod maximal_connected_induced_bipartile_subgraph;
 mod maximal_induced_bipartite_subgraph;
+mod poly_maximal_connected_induced_bipartile_subgraph;
 
 use maximal_connected_induced_bipartile_subgraph::MaximalConnectedInducedBipartiteSubgraph;
 use std::collections::HashSet;
